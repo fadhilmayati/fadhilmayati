@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from .api import ingestion, insights
+from .api import conversation, ingestion, insights
 from .core.config import settings
 from .services.database import init_db
 
@@ -18,6 +18,7 @@ def on_startup() -> None:  # pragma: no cover - framework hook
 
 app.include_router(ingestion.router, prefix="/ingestion", tags=["ingestion"])
 app.include_router(insights.router, prefix="/insights", tags=["insights"])
+app.include_router(conversation.router, prefix="/conversation", tags=["conversation"])
 
 
 @app.get("/health", tags=["meta"])
