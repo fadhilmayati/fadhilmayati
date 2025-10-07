@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Protocol
 import csv
 
 from ..models.transaction import Transaction, TransactionIn
+from .analytics import analytics
 from .database import InMemorySession
 
 if TYPE_CHECKING:  # pragma: no cover - only imported for FastAPI compatibility
@@ -34,11 +35,19 @@ class StatementIngestionService:
 
     def ingest_transactions(self, transactions: Iterable[TransactionIn]) -> int:
         count = 0
+        user_id: str | None = None
         for tx in transactions:
             record = tx.to_transaction()
             self.session.add(record)
             count += 1
+            user_id = record.user_id
         self.session.commit()
+        if user_id:
+            analytics.track(
+                user_id=user_id,
+                event="transactions_ingested",
+                properties={"count": count},
+            )
         return count
 
     def parse_statement(self, user_id: str, file: UploadFile) -> list[TransactionIn]:

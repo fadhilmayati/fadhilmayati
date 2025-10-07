@@ -1,3 +1,3 @@
 """API route modules for the Dompet backend."""
 
-from . import conversation, ingestion, insights  # noqa: F401
+from . import auth, beta, connectors, conversation, ingestion, insights  # noqa: F401
